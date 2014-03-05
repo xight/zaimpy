@@ -65,12 +65,12 @@ class Zaim(object):
         return r.json()["categories"]
 
     def get_user_info(self):
-        endpoint = API_ROOT + "user/verify"
+        endpoint = API_ROOT + "home/user/verify"
 
         auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
         r = requests.get(endpoint, auth=auth)
         r.raise_for_status()
-        return r.json()["user"]
+        return r.json()["me"]
 
     def get_currencies(self):
         endpoint = API_ROOT + "currency"
