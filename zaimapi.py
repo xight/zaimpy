@@ -149,3 +149,17 @@ class Zaim(object):
         r.raise_for_status()
 
         return r.json()["money"]
+
+    def get_genre_by_name(self, name):
+        genres = self.get_genres()
+        for d in genres:
+            if d["name"] == name:
+                return d
+        raise RuntimeError("Invalid genre name")
+
+    def get_category_by_name(self, name):
+        categories = self.get_categories()
+        for d in categories:
+            if d["name"] == name:
+                return d
+        raise RuntimeError("Invalid category name")
