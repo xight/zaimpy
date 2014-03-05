@@ -16,14 +16,12 @@ def main():
     assert access_token_secret, 'Please set "ZAIM_ACCESS_TOKEN_SECRET".'
 
     zaim = Zaim(consumer_key, consumer_secret, access_token_key, access_token_secret)
-    print zaim.get_pay_genres("ja")
-    print zaim.get_income_categories("ja")
-    print zaim.get_pay_categories("ja")
+    print zaim.get_genres()
+    print zaim.get_categories()
     print zaim.get_user_info()
     print zaim.get_currencies()
     print zaim.get_currency_sign("JPY")
     print zaim.get_money_records()
-
 
 if __name__ == '__main__':
     main()
