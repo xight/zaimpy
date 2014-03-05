@@ -3,12 +3,11 @@ import urlparse
 import requests
 from requests_oauthlib import OAuth1
 
-
-# Zaim API ver 0.9.1
-API_ROOT = "https://api.zaim.net/v1/"
+# Zaim API ver 2.0.3
+API_ROOT = "https://api.zaim.net/v2/"
 
 request_token_url = API_ROOT + "auth/request"
-authorize_url = "https://www.zaim.net/users/auth"
+authorize_url = "https://auth.zaim.net/users/auth"
 access_token_url = API_ROOT + "auth/access"
 
 
@@ -22,7 +21,7 @@ class Zaim(object):
         self.access_token_key = access_token_key
         self.access_token_secret = access_token_secret
 
-    def get_request_token(self, callback_url=u"http://oob/"):
+    def get_request_token(self, callback_url=u"http://example.com/"):
         auth = OAuth1(self.consumer_key, self.consumer_secret, callback_uri=callback_url)
         r = requests.post(request_token_url, auth=auth)
         r.raise_for_status()
@@ -41,48 +40,42 @@ class Zaim(object):
         access_token = dict(urlparse.parse_qsl(r.text))
         return access_token
 
-    def get_pay_genres(self, lang=None):
-        endpoint = API_ROOT + "genre/pay.json"
+    def get_genres(self, mode=None):
+        endpoint = API_ROOT + "home/genre"
 
         data = None
-        if lang:
-            data = {"lang": lang}
-        r = requests.post(endpoint, data=data)
+        if mode:
+            data = {"mode": mode}
+
+        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
+        r = requests.get(endpoint, auth=auth)
         r.raise_for_status()
         return r.json()["genres"]
 
-    def get_income_categories(self, lang=None):
-        endpoint = API_ROOT + "category/income.json"
+    def get_categories(self, mode=None):
+        endpoint = API_ROOT + "home/category"
 
         data = None
-        if lang:
-            data = {"lang": lang}
-        r = requests.post(endpoint, data=data)
-        r.raise_for_status()
-        return r.json()["categories"]
+        if mode:
+            data = {"mode": mode}
 
-    def get_pay_categories(self, lang=None):
-        endpoint = API_ROOT + "category/pay.json"
-
-        data = None
-        if lang:
-            data = {"lang": lang}
-        r = requests.post(endpoint, data=data)
+        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
+        r = requests.get(endpoint, auth=auth)
         r.raise_for_status()
         return r.json()["categories"]
 
     def get_user_info(self):
-        endpoint = API_ROOT + "user/verify_credentials.json"
+        endpoint = API_ROOT + "user/verify"
 
         auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.post(endpoint, auth=auth)
+        r = requests.get(endpoint, auth=auth)
         r.raise_for_status()
         return r.json()["user"]
 
     def get_currencies(self):
-        endpoint = API_ROOT + "currency/index.json"
+        endpoint = API_ROOT + "currency"
 
-        r = requests.post(endpoint)
+        r = requests.get(endpoint)
         r.raise_for_status()
 
         return r.json()["currencies"]
@@ -94,44 +87,65 @@ class Zaim(object):
                 return d["unit"]
         raise RuntimeError("Invalid currency code")
 
-    def create_pay(self, **params):
-        endpoint = API_ROOT + "pay/create.json"
+    def get_accounts(self):
+        endpoint = API_ROOT + "home/account"
+        
+        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
+        r = requests.get(endpoint, auth=auth)
+        r.raise_for_status()
 
-        params = {
-            "category_id": params["pay_genre"][:3],
-            "genre_id": params["pay_genre"],
-            "price": unicode(params["price"]),
-            "date": params["date"].strftime("%Y-%m-%d") if params["date"] else "",
-            "comment": params["comment"],
+        return r.json()["accounts"]
+
+    def create_pay(self, **params):
+        endpoint = API_ROOT + "home/money/payment"
+
+        data = {
+            "category_id": params["category_id"],
+            "genre_id": params["genre_id"],
+            "amount": unicode(params["amount"]),
+            "date:": params["date"].strftime("%Y-%m-%d"),
+            "from_account_id": params["from_account_id"],
         }
 
+        if params.has_key("name"):
+            data["name"] = params["name"]
+
+        if params.has_key("place"):
+            data["place"] = params["place"]
+
+        if params.has_key("comment"):
+            data["comment"] = params["comment"]
+
         auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.post(endpoint, data=params, auth=auth)
+        r = requests.post(endpoint, data=data, auth=auth)
         r.raise_for_status()
 
         return r.json()
 
     def create_income(self, **params):
-        endpoint = API_ROOT + "income/create.json"
+        endpoint = API_ROOT + "income"
 
-        params = {
+        data = {
             "category_id": params["income_category"],
-            "price": unicode(params["price"]),
+            "amount": unicode(params["amount"]),
             "date": params["date"].strftime("%Y-%m-%d") if params["date"] else "",
-            "comment": params["comment"],
+            "to_account_id": params["to_account_id"],
         }
 
+        if params.has_key("comment"):
+            data["comment"] = params["comment"]
+
         auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.post(endpoint, data=params, auth=auth)
+        r = requests.post(endpoint, data=data, auth=auth)
         r.raise_for_status()
 
         return r.json()
 
     def get_money_records(self):
-        endpoint = API_ROOT + "money/index.json"
+        endpoint = API_ROOT + "home/money"
 
         auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.post(endpoint, auth=auth)
+        r = requests.get(endpoint, auth=auth)
         r.raise_for_status()
 
         return r.json()["money"]
