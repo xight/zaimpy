@@ -12,7 +12,7 @@ Requirements
 Zaim API
 --------
 
-- Version 0.9.1
+- Version 2.0.3
 
 
 How to use
@@ -27,13 +27,20 @@ Get access token
     $ export ZAIM_CONSUMER_SECRET="YOUR CONSUMER SECRET"
     $ python get_access_token.py
     REQUEST_TOKEN: {u'oauth_token_secret': u'...', u'oauth_token': u'...', u'oauth_callback_confirmed': u'true'}
-    AUTHORIZE_URL: https://www.zaim.net/users/auth?oauth_token=...
+    AUTHORIZE_URL: https://auth.zaim.net/users/auth?oautu_token=...
+    oauth_verifier? : 
 
 Go to AUTHORIZE_URL and login to Zaim. Then copy oauth_verifier from browser source.
 
 ::
 
     <code>YOUR OAUTH VERIFIER IS HERE</code>
+
+::
+
+    oauth_verifier? : YOUR OAUTH VERIFIER
+    OAUTH_VERIFIER: YOUR OAUTH VERIFIER
+    ACCESS_TOKEN: {u'oauth_token_secret': u'YOUR OAUTH TOKEN SECRET', u'oauth_token': u'YOUR OAUTH TOKEN KEY'}
 
 If you are developing an web service, oauth_verifier will be redirected to your service.
 
