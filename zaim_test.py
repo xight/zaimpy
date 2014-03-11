@@ -27,7 +27,7 @@ class ZaimClassTestCase(unittest.TestCase):
 
     def setUp(self):
         self.last_money_id = 0
-        self.user_id = zaim.get_user_info()["id"]
+        self.user_id = zaim.get_user()["id"]
         self.account_id = 0
         pass
 
@@ -86,8 +86,8 @@ class ZaimClassTestCase(unittest.TestCase):
     def test_get_category_id_by_name(self):
         self.assertTrue(zaim.get_category_id_by_name(u"食費"))
 
-    def test_get_user_info(self):
-        self.assertTrue(zaim.get_user_info())
+    def test_get_user(self):
+        self.assertTrue(zaim.get_user())
 
     def test_get_accounts(self):
         self.assertTrue(zaim.get_accounts())

@@ -23,7 +23,7 @@ class Zaim(object):
         self.set_access_token(access_token_key, access_token_secret)
         self.genres = {}
         self.categories = {}
-        self.user_info = {}
+        self.user = {}
         self.accounts = {}
         self.currencies = {}
         self.money_records = {}
@@ -78,14 +78,14 @@ class Zaim(object):
 
         return self.categories
 
-    def get_user_info(self):
-        if not self.user_info:
+    def get_user(self):
+        if not self.user:
             endpoint = API_ROOT + "home/user/verify"
             r = requests.get(endpoint, auth=self.auth)
             r.raise_for_status()
-            self.user_info = r.json()["me"]
+            self.user = r.json()["me"]
 
-        return self.user_info
+        return self.user
 
     def get_currencies(self):
         if not self.currencies:
