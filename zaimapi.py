@@ -19,6 +19,8 @@ class Zaim(object):
         self.consumer_key = consumer_key
         self.consumer_secret = consumer_secret
         self.set_access_token(access_token_key, access_token_secret)
+        self.genres = {}
+        self.categories = {}
 
     def set_access_token(self, access_token_key, access_token_secret):
         self.access_token_key = access_token_key
@@ -50,10 +52,13 @@ class Zaim(object):
         if mode:
             data = {"mode": mode}
 
-        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.get(endpoint, auth=auth)
-        r.raise_for_status()
-        return r.json()["genres"]
+        if not self.genres:
+            auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
+            r = requests.get(endpoint, auth=auth)
+            r.raise_for_status()
+            self.genres = r.json()["genres"]
+
+        return self.genres
 
     def get_categories(self, mode=None):
         endpoint = API_ROOT + "home/category"
@@ -62,10 +67,13 @@ class Zaim(object):
         if mode:
             data = {"mode": mode}
 
-        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.get(endpoint, auth=auth)
-        r.raise_for_status()
-        return r.json()["categories"]
+        if not self.categories:
+            auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
+            r = requests.get(endpoint, auth=auth)
+            r.raise_for_status()
+            self.categories = r.json()["categories"]
+
+        return self.categories
 
     def get_user_info(self):
         endpoint = API_ROOT + "home/user/verify"
