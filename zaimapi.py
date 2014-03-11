@@ -115,6 +115,12 @@ class Zaim(object):
 
         return self.accounts
 
+    def get_account_by_name(self,name):
+        accounts = self.get_accounts()
+        for d in accounts:
+            if d["name"] == name:
+                return d
+
     def create_pay(self, **params):
         endpoint = API_ROOT + "home/money/payment"
 

@@ -91,6 +91,12 @@ class ZaimClassTestCase(unittest.TestCase):
 
     def test_get_accounts(self):
         self.assertTrue(zaim.get_accounts())
+
+    def test_get_accounts_by_name(self):
+        self.assertTrue(zaim.get_account_by_name(u"お財布"))
+
+    def test_get_accounts_by_name_not_exist(self):
+        self.assertIsNone(zaim.get_accounts_by_name(u"not exist"))
     
     def test_get_currencies(self):
         self.assertTrue(zaim.get_currencies())
