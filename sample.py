@@ -1,5 +1,10 @@
 # coding: utf-8
 import os
+import sys
+import codecs
+sys.stdin  = codecs.getreader('utf8')(sys.stdin)
+sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+
 from zaimapi import Zaim
 from pprint import pprint
 
@@ -16,13 +21,14 @@ def main():
 
     zaim = Zaim(consumer_key, consumer_secret, access_token_key, access_token_secret)
     pprint(zaim.get_genres())
-    print zaim.get_categories()
-    print zaim.get_user_info()
-    print zaim.get_currencies()
-    print zaim.get_currency_sign("JPY")
-    print zaim.get_money_records()
-    print zaim.get_genre_by_name(u"食料品")
-    print zaim.get_category_by_name(u"食費")
+    pprint(zaim.get_accounts())
+    pprint(zaim.get_categories())
+    pprint(zaim.get_user())
+    pprint(zaim.get_currencies())
+    pprint(zaim.get_currency_sign("JPY"))
+    pprint(zaim.get_money_records())
+    pprint(zaim.get_genre_by_name(u"食料品"))
+    pprint(zaim.get_category_by_name(u"食費"))
 
 if __name__ == '__main__':
     main()
