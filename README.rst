@@ -62,7 +62,15 @@ Test
     $ export ZAIM_CONSUMER_SECRET="YOUR CONSUMER SECRET"
     $ export ZAIM_ACCESS_TOKEN_KEY="YOUR ACCESS TOKEN KEY"
     $ export ZAIM_ACCESS_TOKEN_SECRET="YOUR ACCESS TOKEN SECRET"
-    $ python test_zaimapi.py
+    $ python zaim_test.py
+
+Import from file
+^^^^^^^^^^^^^^^^
+
+::
+
+    $ cd tools
+    $ python import.py < data.tsv
 
 
 License
