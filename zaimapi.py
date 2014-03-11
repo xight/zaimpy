@@ -141,12 +141,9 @@ class Zaim(object):
         return r.json()
 
     def delete_pay(self, money_id):
-        endpoint = API_ROOT + "home/money/payment"
+        endpoint = API_ROOT + "home/money/payment/" + unicode(money_id)
 
-        data = {
-            "id": money_id,
-        }
-        r = requests.delete(endpoint, data=data, auth=self.auth)
+        r = requests.delete(endpoint, auth=self.auth)
         r.raise_for_status()
 
         return r.json()
