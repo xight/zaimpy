@@ -1,7 +1,10 @@
 # coding: utf-8
+import sys
+import codecs
 import urlparse
 import requests
 from requests_oauthlib import OAuth1
+sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
 # Zaim API ver 2.0.3
 API_ROOT = "https://api.zaim.net/v2/"
@@ -85,6 +88,7 @@ class Zaim(object):
         for d in currencies:
             if d["currency_code"] == currency_code:
                 return d["unit"]
+
         raise RuntimeError("Invalid currency code")
 
     def get_accounts(self):
@@ -155,11 +159,9 @@ class Zaim(object):
         for d in genres:
             if d["name"] == name:
                 return d
-        raise RuntimeError("Invalid genre name")
 
     def get_category_by_name(self, name):
         categories = self.get_categories()
         for d in categories:
             if d["name"] == name:
                 return d
-        raise RuntimeError("Invalid category name")
