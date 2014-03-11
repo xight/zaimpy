@@ -10,6 +10,7 @@ from pprint import pprint
 
 from zaimapi import Zaim
 
+sys.stdin  = codecs.getreader('utf8')(sys.stdin)
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
 consumer_key = unicode(os.environ.get("ZAIM_CONSUMER_KEY", ""))
