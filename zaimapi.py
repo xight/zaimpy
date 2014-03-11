@@ -1,4 +1,6 @@
-# coding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 import codecs
 import urlparse
@@ -21,6 +23,11 @@ class Zaim(object):
         self.set_access_token(access_token_key, access_token_secret)
         self.genres = {}
         self.categories = {}
+        self.user_info = {}
+        self.accounts = {}
+        self.currencies = {}
+        self.money_records = {}
+        self.auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
 
     def set_access_token(self, access_token_key, access_token_secret):
         self.access_token_key = access_token_key
@@ -46,50 +53,48 @@ class Zaim(object):
         return access_token
 
     def get_genres(self, mode=None):
-        endpoint = API_ROOT + "home/genre"
-
         data = None
         if mode:
             data = {"mode": mode}
 
         if not self.genres:
-            auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-            r = requests.get(endpoint, auth=auth)
+            endpoint = API_ROOT + "home/genre"
+            r = requests.get(endpoint, auth=self.auth)
             r.raise_for_status()
             self.genres = r.json()["genres"]
 
         return self.genres
 
     def get_categories(self, mode=None):
-        endpoint = API_ROOT + "home/category"
-
         data = None
         if mode:
             data = {"mode": mode}
 
         if not self.categories:
-            auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-            r = requests.get(endpoint, auth=auth)
+            endpoint = API_ROOT + "home/category"
+            r = requests.get(endpoint, auth=self.auth)
             r.raise_for_status()
             self.categories = r.json()["categories"]
 
         return self.categories
 
     def get_user_info(self):
-        endpoint = API_ROOT + "home/user/verify"
+        if not self.user_info:
+            endpoint = API_ROOT + "home/user/verify"
+            r = requests.get(endpoint, auth=self.auth)
+            r.raise_for_status()
+            self.user_info = r.json()["me"]
 
-        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.get(endpoint, auth=auth)
-        r.raise_for_status()
-        return r.json()["me"]
+        return self.user_info
 
     def get_currencies(self):
-        endpoint = API_ROOT + "currency"
+        if not self.currencies:
+            endpoint = API_ROOT + "currency"
+            r = requests.get(endpoint)
+            r.raise_for_status()
+            self.currencies = r.json()["currencies"]
 
-        r = requests.get(endpoint)
-        r.raise_for_status()
-
-        return r.json()["currencies"]
+        return self.currencies
 
     def get_currency_sign(self, currency_code):
         currencies = self.get_currencies()
@@ -97,16 +102,15 @@ class Zaim(object):
             if d["currency_code"] == currency_code:
                 return d["unit"]
 
-        raise RuntimeError("Invalid currency code")
-
     def get_accounts(self):
         endpoint = API_ROOT + "home/account"
-        
-        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.get(endpoint, auth=auth)
-        r.raise_for_status()
 
-        return r.json()["accounts"]
+        if not self.accounts:
+            r = requests.get(endpoint, auth=self.auth)
+            r.raise_for_status()
+            self.accounts =  r.json()["accounts"]
+
+        return self.accounts
 
     def create_pay(self, **params):
         endpoint = API_ROOT + "home/money/payment"
@@ -115,7 +119,7 @@ class Zaim(object):
             "category_id": params["category_id"],
             "genre_id": params["genre_id"],
             "amount": unicode(params["amount"]),
-            "date:": params["date"].strftime("%Y-%m-%d"),
+            "date": params["date"].strftime("%Y-%m-%d"),
             "from_account_id": params["from_account_id"],
         }
 
@@ -128,14 +132,24 @@ class Zaim(object):
         if params.has_key("comment"):
             data["comment"] = params["comment"]
 
-        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.post(endpoint, data=data, auth=auth)
+        r = requests.post(endpoint, data=data, auth=self.auth)
+        r.raise_for_status()
+
+        return r.json()
+
+    def delete_pay(self, money_id):
+        endpoint = API_ROOT + "home/money/payment"
+
+        data = {
+            "id": money_id,
+        }
+        r = requests.delete(endpoint, data=data, auth=self.auth)
         r.raise_for_status()
 
         return r.json()
 
     def create_income(self, **params):
-        endpoint = API_ROOT + "income"
+        endpoint = API_ROOT + "home/money/income"
 
         data = {
             "category_id": params["income_category"],
@@ -147,20 +161,19 @@ class Zaim(object):
         if params.has_key("comment"):
             data["comment"] = params["comment"]
 
-        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.post(endpoint, data=data, auth=auth)
+        r = requests.post(endpoint, data=data, auth=self.auth)
         r.raise_for_status()
 
         return r.json()
 
     def get_money_records(self):
-        endpoint = API_ROOT + "home/money"
+        if not self.money_records:
+            endpoint = API_ROOT + "home/money"
+            r = requests.get(endpoint, auth=self.auth)
+            r.raise_for_status()
+            self.money_records = r.json()["money"]
 
-        auth = OAuth1(self.consumer_key, self.consumer_secret, self.access_token_key, self.access_token_secret)
-        r = requests.get(endpoint, auth=auth)
-        r.raise_for_status()
-
-        return r.json()["money"]
+        return self.money_records
 
     def get_genre_by_name(self, name):
         genres = self.get_genres()
@@ -173,3 +186,9 @@ class Zaim(object):
         for d in categories:
             if d["name"] == name:
                 return d
+
+    def get_genre_id_by_name(self, name):
+        return self.get_genre_by_name(name)["id"]
+
+    def get_category_id_by_name(self, name):
+        return self.get_category_by_name(name)["id"]

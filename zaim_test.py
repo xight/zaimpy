@@ -1,11 +1,14 @@
-# coding: utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import sys
 import codecs 
 import unittest
+from datetime import datetime
+from datetime import timedelta
+from pprint import pprint
 
 from zaimapi import Zaim
-from pprint import pprint
 
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
 
@@ -28,15 +31,9 @@ class ZaimClassTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    '''
-    def test_get_categories(self):
-        categories = zaim.get_categories(self)
-        pprint(categories)
-
     def test_get_genres(self):
-        genres = zaim.get_genres(self)
-        pprint(genres)
-    '''
+        self.assertTrue(zaim.get_genres(self))
+
     def test_get_genres_by_name(self):
         genre = zaim.get_genre_by_name(u"食料品")
         genre_org = {
@@ -53,6 +50,13 @@ class ZaimClassTestCase(unittest.TestCase):
 
     def test_get_genres_by_name_not_exist(self):
         self.assertIsNone(zaim.get_genre_by_name(u"not exist"))
+        self.assertFalse(zaim.get_genre_by_name(u"not exist"))
+
+    def test_get_genre_id_by_name(self):
+        self.assertTrue(zaim.get_genre_id_by_name(u"食料品"))
+
+    def test_get_categories(self):
+        self.assertTrue(zaim.get_categories(self))
 
     def test_get_category_by_name(self):
         category = zaim.get_category_by_name(u"食費")
@@ -74,6 +78,39 @@ class ZaimClassTestCase(unittest.TestCase):
 
     def test_get_category_by_name_not_exist(self):
         self.assertIsNone(zaim.get_category_by_name(u"not exist"))
+        self.assertFalse(zaim.get_category_by_name(u"not exist"))
+
+    def test_get_category_id_by_name(self):
+        self.assertTrue(zaim.get_category_id_by_name(u"食費"))
+
+    def test_get_user_info(self):
+        self.assertTrue(zaim.get_user_info())
+
+    def test_get_accounts(self):
+        self.assertTrue(zaim.get_accounts())
+    
+    def test_get_currencies(self):
+        self.assertTrue(zaim.get_currencies())
+
+    def test_get_money_records(self):
+        self.assertTrue(zaim.get_money_records())
+
+    def test_create_pay(self):
+        date = datetime.today() + timedelta(days=31)
+        param = {
+                'category_id': zaim.get_category_id_by_name(u"食費"),
+                'genre_id': zaim.get_genre_id_by_name(u"食料品"),
+                'amount': '100000',
+                'date': date,
+                'comment': 'API',
+                'from_account_id': '1221210',
+                }
+        pprint(zaim.create_pay(**param))
+        # self.assertTrue(zaim.create_pay(**param))
+
+    def test_delete_pay(self):
+        create_money_id = 150382832
+        pprint(zaim.delete_pay(create_money_id))
 
 if __name__ == '__main__':
     unittest.main()
