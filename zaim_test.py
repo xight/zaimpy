@@ -26,6 +26,9 @@ zaim = Zaim(consumer_key, consumer_secret, access_token_key, access_token_secret
 class ZaimClassTestCase(unittest.TestCase):
 
     def setUp(self):
+        self.last_money_id = 0
+        self.user_id = zaim.get_user_info()["id"]
+        self.account_id = 0
         pass
 
     def tearDown(self):
@@ -103,14 +106,18 @@ class ZaimClassTestCase(unittest.TestCase):
                 'amount': '100000',
                 'date': date,
                 'comment': 'API',
-                'from_account_id': '1221210',
+                'from_account_id': self.user_id,
                 }
-        pprint(zaim.create_pay(**param))
-        # self.assertTrue(zaim.create_pay(**param))
+        ret = zaim.create_pay(**param)
+        pprint(ret)
+        self.last_money_id = ret["money"]["id"]
+        self.assertTrue(ret)
 
     def test_delete_pay(self):
-        create_money_id = 150382832
-        pprint(zaim.delete_pay(create_money_id))
+        create_money_id = self.last_money_id
+        ret = zaim.delete_pay(create_money_id)
+        pprint(ret)
+        self.assertTrue(ret)
 
 if __name__ == '__main__':
     unittest.main()
