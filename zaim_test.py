@@ -27,7 +27,6 @@ class ZaimClassTestCase(unittest.TestCase):
 
     def setUp(self):
         self.last_money_id = 0
-        self.user_id = zaim.get_user()["id"]
         self.account_id = 0
         pass
 
@@ -89,6 +88,9 @@ class ZaimClassTestCase(unittest.TestCase):
     def test_get_user(self):
         self.assertTrue(zaim.get_user())
 
+    def test_get_user_id(self):
+        self.assertTrue(zaim.get_user_id())
+
     def test_get_accounts(self):
         self.assertTrue(zaim.get_accounts())
     
@@ -106,7 +108,7 @@ class ZaimClassTestCase(unittest.TestCase):
                 'amount': '100000',
                 'date': date,
                 'comment': 'API',
-                'from_account_id': self.user_id,
+                'from_account_id': zaim.get_user_id(),
                 }
         ret = zaim.create_pay(**param)
         pprint(ret)
@@ -114,8 +116,7 @@ class ZaimClassTestCase(unittest.TestCase):
         self.assertTrue(ret)
 
     def test_delete_pay(self):
-        create_money_id = self.last_money_id
-        ret = zaim.delete_pay(create_money_id)
+        ret = zaim.delete_pay(self.last_money_id)
         pprint(ret)
         self.assertTrue(ret)
 

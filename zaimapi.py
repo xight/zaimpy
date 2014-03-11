@@ -87,6 +87,9 @@ class Zaim(object):
 
         return self.user
 
+    def get_user_id(self):
+        return self.get_user()["id"]
+
     def get_currencies(self):
         if not self.currencies:
             endpoint = API_ROOT + "currency"
