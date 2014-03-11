@@ -36,12 +36,6 @@ Go to AUTHORIZE_URL and login to Zaim. Then copy oauth_verifier from browser sou
 
     <code>YOUR OAUTH VERIFIER IS HERE</code>
 
-::
-
-    oauth_verifier? : YOUR OAUTH VERIFIER
-    OAUTH_VERIFIER: YOUR OAUTH VERIFIER
-    ACCESS_TOKEN: {u'oauth_token_secret': u'YOUR OAUTH TOKEN SECRET', u'oauth_token': u'YOUR OAUTH TOKEN KEY'}
-
 If you are developing an web service, oauth_verifier will be redirected to your service.
 
 ::
