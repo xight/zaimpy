@@ -29,18 +29,32 @@ def main():
     for line in sys.stdin:
         itemList = line[:-1].split('\t')
         (date, genre_name, amount, account_name) = tuple(itemList)
-        genre = zaim.get_genre_by_name(genre_name)
-        account = zaim.get_account_by_name(account_name)
-        param = {
-            'category_id': genre["category_id"],
-            'genre_id'   : genre["id"],
-            'amount'     : unicode(amount),
-            'date'       : datetime.strptime(date,"%Y-%m-%d"),
-            'comment'    : 'API',
-            'from_account_id': account["id"],
-        }
-        pprint(param)
-        zaim.create_pay(**param)
+
+        try:
+            genre = zaim.get_genre_by_name(genre_name)
+        except ValueError:
+            genre = None
+
+        try:
+            account = zaim.get_account_by_name(account_name)
+        except ValueError:
+            account = None
+
+        if genre and account:
+            param = {
+                'category_id': genre["category_id"],
+                'genre_id'   : genre["id"],
+                'amount'     : unicode(amount),
+                'date'       : datetime.strptime(date,"%Y-%m-%d"),
+                'comment'    : 'API',
+                'from_account_id': account["id"],
+            }
+
+            ret = zaim.create_pay(**param)
+            print "OK: " + line,
+            print ret
+        else:
+            print "NG: " + line,
 
 if __name__ == '__main__':
     main()
