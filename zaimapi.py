@@ -2,6 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import locale
+locale.setlocale(locale.LC_NUMERIC,'ja_JP')
+
 import urlparse
 import requests
 from requests_oauthlib import OAuth1
@@ -13,6 +16,7 @@ API_ROOT = "https://api.zaim.net/v2/"
 request_token_url = API_ROOT + "auth/request"
 authorize_url = "https://auth.zaim.net/users/auth"
 access_token_url = API_ROOT + "auth/access"
+
 
 
 class Zaim(object):
@@ -123,11 +127,13 @@ class Zaim(object):
 
     def create_pay(self, **params):
         endpoint = API_ROOT + "home/money/payment"
+        # remove comma
+        amount = locale.atoi(params["amount"])
 
         data = {
             "category_id": params["category_id"],
             "genre_id": params["genre_id"],
-            "amount": unicode(params["amount"]),
+            "amount": unicode(amount),
             "date": params["date"].strftime("%Y-%m-%d"),
             "from_account_id": params["from_account_id"],
         }
