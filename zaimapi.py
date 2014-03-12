@@ -5,6 +5,7 @@ import sys
 import urlparse
 import requests
 from requests_oauthlib import OAuth1
+from pprint import pprint
 
 # Zaim API ver 2.0.3
 API_ROOT = "https://api.zaim.net/v2/"
@@ -118,6 +119,7 @@ class Zaim(object):
         for d in accounts:
             if d["name"] == name:
                 return d
+        raise ValueError("Account not found: " + name)
 
     def create_pay(self, **params):
         endpoint = API_ROOT + "home/money/payment"
@@ -147,10 +149,13 @@ class Zaim(object):
     def delete_pay(self, money_id):
         endpoint = API_ROOT + "home/money/payment/" + unicode(money_id)
 
-        r = requests.delete(endpoint, auth=self.auth)
-        r.raise_for_status()
-
-        return r.json()
+        try:
+            if self.get_money_record_by_id(money_id):
+                r = requests.delete(endpoint, auth=self.auth)
+                r.raise_for_status()
+                return r.json()
+        except ValueError:
+            raise ValueError("Money record not found: " + money_id)
 
     def create_income(self, **params):
         endpoint = API_ROOT + "home/money/income"
@@ -179,17 +184,26 @@ class Zaim(object):
 
         return self.money_records
 
+    def get_money_record_by_id(self,money_id):
+        records = self.get_money_records()
+        for d in records:
+            if d["id"] == money_id:
+                return d
+        raise ValueError("Money record not found: " + money_id)
+
     def get_genre_by_name(self, name):
         genres = self.get_genres()
         for d in genres:
             if d["name"] == name:
                 return d
+        raise ValueError("Genre not found: " + name)
 
     def get_category_by_name(self, name):
         categories = self.get_categories()
         for d in categories:
             if d["name"] == name:
                 return d
+        raise ValueError("Category not found: " + name)
 
     def get_genre_id_by_name(self, name):
         return self.get_genre_by_name(name)["id"]
