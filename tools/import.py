@@ -28,7 +28,7 @@ def main():
 
     for line in sys.stdin:
         itemList = line[:-1].split('\t')
-        (date, genre_name, amount, account_name) = tuple(itemList)
+        (date, place, genre_name, comment, amount, account_name) = tuple(itemList)
 
         try:
             genre = zaim.get_genre_by_name(genre_name)
@@ -46,8 +46,9 @@ def main():
                 'genre_id'   : genre["id"],
                 'amount'     : unicode(amount),
                 'date'       : datetime.strptime(date,"%Y-%m-%d"),
-                'comment'    : 'API',
                 'from_account_id': account["id"],
+                'comment'    : 'API: ' + unicode(comment),
+                'place'      : unicode(place),
             }
 
             ret = zaim.create_pay(**param)
