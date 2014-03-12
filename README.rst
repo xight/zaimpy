@@ -77,3 +77,10 @@ License
 -------
 
 The MIT License
+
+ToDo
+-------
+
+* logging
+* show records within specific range
+* delete records within specific range
