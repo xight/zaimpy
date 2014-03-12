@@ -117,7 +117,7 @@ class ZaimClassTestCase(unittest.TestCase):
                 'genre_id': zaim.get_genre_id_by_name(u"食料品"),
                 'amount': '200,000',
                 'date': date,
-                'comment': 'API',
+                'comment': 'API: Test',
                 'from_account_id': zaim.get_user_id(),
                 }
         ret = zaim.create_pay(**param)
@@ -125,7 +125,6 @@ class ZaimClassTestCase(unittest.TestCase):
 
         record = zaim.get_money_record_by_id(ret["money"]["id"])
         self.assertTrue(record)
-        pprint(record)
         self.assertEqual(record["amount"],200000)
 
         last_money_id = ret["money"]["id"]
