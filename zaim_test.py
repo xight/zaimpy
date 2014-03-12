@@ -50,8 +50,8 @@ class ZaimClassTestCase(unittest.TestCase):
         self.assertEqual(genre,genre_org)
 
     def test_get_genres_by_name_not_exist(self):
-        self.assertIsNone(zaim.get_genre_by_name(u"not exist"))
-        self.assertFalse(zaim.get_genre_by_name(u"not exist"))
+        with self.assertRaises(ValueError) as e:
+            zaim.get_genre_by_name(u"not exist")
 
     def test_get_genre_id_by_name(self):
         self.assertTrue(zaim.get_genre_id_by_name(u"食料品"))
@@ -78,8 +78,8 @@ class ZaimClassTestCase(unittest.TestCase):
         self.assertEqual(category,category_org)
 
     def test_get_category_by_name_not_exist(self):
-        self.assertIsNone(zaim.get_category_by_name(u"not exist"))
-        self.assertFalse(zaim.get_category_by_name(u"not exist"))
+        with self.assertRaises(ValueError) as e:
+            zaim.get_category_by_name(u"not exist")
 
     def test_get_category_id_by_name(self):
         self.assertTrue(zaim.get_category_id_by_name(u"食費"))
@@ -97,13 +97,18 @@ class ZaimClassTestCase(unittest.TestCase):
         self.assertTrue(zaim.get_account_by_name(u"お財布"))
 
     def test_get_account_by_name_not_exist(self):
-        self.assertIsNone(zaim.get_account_by_name(u"not exist"))
+        with self.assertRaises(ValueError) as e:
+            zaim.get_account_by_name(u"not exist")
     
     def test_get_currencies(self):
         self.assertTrue(zaim.get_currencies())
 
     def test_get_money_records(self):
         self.assertTrue(zaim.get_money_records())
+
+    def test_get_money_record_by_id_not_exist(self):
+        with self.assertRaises(ValueError) as e:
+            zaim.get_money_record_by_id(u"0")
 
     def test_create_delete_pay(self):
         date = datetime.today() + timedelta(days=31)
@@ -118,9 +123,15 @@ class ZaimClassTestCase(unittest.TestCase):
         ret = zaim.create_pay(**param)
         self.assertTrue(ret["money"]["id"])
 
+        self.assertTrue(zaim.get_money_record_by_id(ret["money"]["id"]))
+
         last_money_id = ret["money"]["id"]
         ret = zaim.delete_pay(last_money_id)
         self.assertTrue(ret["money"]["id"])
+
+    def test_delete_pay_not_exist(self):
+        with self.assertRaises(ValueError) as e:
+            zaim.delete_pay(u"1")
 
 if __name__ == '__main__':
     unittest.main()
