@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import division, print_function, absolute_import
 
 import os
 import sys
@@ -32,7 +33,7 @@ def main():
         try:
             genre = zaim.get_genre_by_name(genre_name)
         except ValueError:
-            print genre_name + " not found."
+            print(genre_name + " not found.")
 
 if __name__ == '__main__':
     main()

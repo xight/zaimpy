@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import division, print_function, absolute_import
 
 import os
 import sys
@@ -34,8 +35,8 @@ def main():
             ret.append(d)
 
     for d in ret:
-        print d["id"],
-        print d["comment"]
+        print(d["id"],)
+        print(d["comment"])
         money_id = d["id"]
         zaim.delete_pay(money_id)
 

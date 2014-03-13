@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import division, print_function, absolute_import
 
 import os
 import sys
@@ -52,10 +53,10 @@ def main():
             }
 
             ret = zaim.create_pay(**param)
-            print "OK: " + line,
-            print ret
+            print("OK: " + line),
+            print(ret)
         else:
-            print "NG: " + line,
+            print("NG: " + line),
 
 if __name__ == '__main__':
     main()
